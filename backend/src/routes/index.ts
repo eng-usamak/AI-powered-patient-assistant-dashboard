@@ -2,12 +2,18 @@ import { Router } from 'express';
 import { router as authRouter } from './auth.routes';
 import { router as patientRouter } from './patient.routes';
 import { router as chatRouter } from './chat.routes';
+import { prisma } from '../db/prismaClient';
 
 export const router = Router();
 
 // Health check
-router.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+router.get('/health', async (req, res, next) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`; // simple DB check
+    res.json({ status: 'ok', db: 'ok' });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Auth routes: /api/auth/...
