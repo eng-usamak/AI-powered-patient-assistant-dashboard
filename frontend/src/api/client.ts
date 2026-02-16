@@ -33,7 +33,19 @@ async function request<T>(
     throw new Error(errorData.error?.message || `HTTP ${response.status}`);
   }
 
-  return response.json();
+  // Handle 204 No Content responses (common for DELETE operations)
+  if (response.status === 204 || response.status === 204) {
+    return undefined as T;
+  }
+
+  // Check if response has content before parsing
+  const contentType = response.headers.get('content-type');
+  if (contentType && contentType.includes('application/json')) {
+    const text = await response.text();
+    return text ? JSON.parse(text) : undefined as T;
+  }
+
+  return undefined as T;
 }
 
 export const api = {
