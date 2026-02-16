@@ -1,10 +1,16 @@
 import { Router } from 'express';
 import { authMiddleware } from '../middleware/auth';
+import {
+  handleGetChatHistory,
+  handlePostChat,
+} from '../controllers/chat.controller';
 
 export const router = Router();
 
 router.use(authMiddleware);
 
-router.post('/', (req, res) => {
-  res.status(501).json({ message: 'Not implemented yet' });
-});
+// GET /api/chat/:patientId  → history
+router.get('/:patientId', handleGetChatHistory);
+
+// POST /api/chat           → send + get AI reply
+router.post('/', handlePostChat);
