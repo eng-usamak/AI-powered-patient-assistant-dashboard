@@ -5,6 +5,7 @@ import PatientListPage from './pages/PatientListPage';
 import PatientDetailPage from './pages/PatientDetailPage';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './context/useAuth';
+import RegisterPage from './pages/RegisterPage';
 
 const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({
   children,
@@ -21,6 +22,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactElement }> = ({
 const AppRoutes: React.FC = () => {
   return (
     <Routes>
+      <Route path="/register" element={<RegisterPage />} />
       <Route path="/login" element={<LoginPage />} />
 
       <Route
