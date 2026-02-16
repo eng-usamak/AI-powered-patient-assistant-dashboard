@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  patients     Patient[]
+}
+
+model Patient {
+  id           Int           @id @default(autoincrement())
+  name         String
+  email        String?
+  phone        String?
+  dob          DateTime?
+  medicalNotes String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  createdById  Int?
+  messages     ChatMessage[]
+  createdBy    User?         @relation(fields: [createdById], references: [id])
+}
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  patientId Int
+  sender    Sender
+  content   String
+  createdAt DateTime @default(now())
+  patient   Patient  @relation(fields: [patientId], references: [id])
+
+  @@index([patientId, createdAt])
+}
+
+enum Sender {
+  USER
+  AI
+}
