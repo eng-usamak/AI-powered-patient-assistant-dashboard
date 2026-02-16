@@ -1,5 +1,6 @@
 import { prisma } from '../db/prismaClient';
 import { Sender } from '@prisma/client';
+import { config } from '../config/env';
 
 export async function getChatHistory(patientId: number) {
   return prisma.chatMessage.findMany({
@@ -8,16 +9,41 @@ export async function getChatHistory(patientId: number) {
   });
 }
 
-// For now, a simple mock AI responder
-async function mockAiResponse(message: string): Promise<string> {
-  return `This is a mock dental assistant response to: "${message}"`;
+
+// Call external AI service
+async function callAiService(
+  message: string,
+  patientContext?: { name?: string; email?: string }
+): Promise<string> {
+  try {
+    const response = await fetch(`${config.aiServiceUrl}/generate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message,
+        patientContext,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`AI service returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.response;
+  } catch (err) {
+    // Fallback to mock if AI service is unavailable
+    console.error('AI service error:', err);
+    return `Mock response (AI service unavailable): ${message}`;
+  }
 }
 
 export async function createChatMessageWithAiReply(
   patientId: number,
   userMessage: string
 ) {
-  // Wrap in a transaction so both messages are stored together
   return prisma.$transaction(async (tx) => {
     const patient = await tx.patient.findUnique({ where: { id: patientId } });
     if (!patient) {
@@ -35,8 +61,11 @@ export async function createChatMessageWithAiReply(
       },
     });
 
-    // 2. Get AI response (mock for now)
-    const aiText = await mockAiResponse(userMessage);
+    // 2. Get AI response from external service
+    const aiText = await callAiService(userMessage, {
+      name: patient.name,
+      email: patient.email || undefined,
+    });
 
     // 3. Store AI message
     const aiMsg = await tx.chatMessage.create({
