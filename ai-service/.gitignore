@@ -1,12 +1,3 @@
-# Node
-node_modules
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-dist
-build
-
 # Env files
 .env
 .env.local
@@ -26,8 +17,6 @@ log.txt
 .vscode
 .idea
 
-# Prisma
-prisma/*.db
 
 # Python
 venv/
