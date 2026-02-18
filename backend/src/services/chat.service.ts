@@ -1,6 +1,7 @@
 import { prisma } from '../db/prismaClient';
 import { Sender } from '@prisma/client';
 import { config } from '../config/env';
+import type { PrismaClient } from '@prisma/client';
 
 export async function getChatHistory(patientId: number) {
   return prisma.chatMessage.findMany({
@@ -44,7 +45,7 @@ export async function createChatMessageWithAiReply(
   patientId: number,
   userMessage: string
 ) {
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>) => {
     const patient = await tx.patient.findUnique({ where: { id: patientId } });
     if (!patient) {
       const err: any = new Error('Patient not found');
