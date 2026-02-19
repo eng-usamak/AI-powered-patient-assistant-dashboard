@@ -52,7 +52,11 @@ export async function handleGetPatient(
       return res.status(400).json({ error: { message: 'Invalid patient id' } });
     }
 
-    const patient = await getPatientById(id);
+    if (!req.user?.userId) {
+      return res.status(401).json({ error: { message: 'Unauthorized' } });
+    }
+
+    const patient = await getPatientById(id, req.user.userId);
     if (!patient) {
       return res.status(404).json({ error: { message: 'Patient not found' } });
     }
@@ -75,7 +79,11 @@ export async function handleListPatients(
     const safePage = page > 0 ? page : 1;
     const safeLimit = limit > 0 && limit <= 100 ? limit : 10;
 
-    const result = await listPatients(safePage, safeLimit);
+    if (!req.user?.userId) {
+      return res.status(401).json({ error: { message: 'Unauthorized' } });
+    }
+
+    const result = await listPatients(safePage, safeLimit, req.user.userId);
 
     res.json({ data: result.items, pagination: result });
   } catch (err) {
@@ -92,6 +100,10 @@ export async function handleUpdatePatient(
     const id = Number(req.params.id);
     if (Number.isNaN(id)) {
       return res.status(400).json({ error: { message: 'Invalid patient id' } });
+    }
+
+    if (!req.user?.userId) {
+      return res.status(401).json({ error: { message: 'Unauthorized' } });
     }
 
     const { name, email, phone, dob, medicalNotes } = req.body as {
@@ -115,12 +127,11 @@ export async function handleUpdatePatient(
       phone,
       dob,
       medicalNotes,
-    });
+    }, req.user.userId);
 
     res.json({ data: patient });
   } catch (err: any) {
-    if (err.code === 'P2025') {
-      // Prisma "record not found"
+    if (err.code === 'P2025' || err.message === 'Patient not found') {
       return res.status(404).json({ error: { message: 'Patient not found' } });
     }
     next(err);
@@ -138,11 +149,15 @@ export async function handleDeletePatient(
       return res.status(400).json({ error: { message: 'Invalid patient id' } });
     }
 
-    await deletePatient(id);
+    if (!req.user?.userId) {
+      return res.status(401).json({ error: { message: 'Unauthorized' } });
+    }
+
+    await deletePatient(id, req.user.userId);
 
     res.status(204).send();
   } catch (err: any) {
-    if (err.code === 'P2025') {
+    if (err.code === 'P2025' || err.message === 'Patient not found') {
       return res.status(404).json({ error: { message: 'Patient not found' } });
     }
     next(err);

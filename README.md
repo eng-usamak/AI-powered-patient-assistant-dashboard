@@ -4,10 +4,8 @@ A full-stack AI-powered patient assistant dashboard for a dental clinic. Built w
 
 ## 🚀 Live Deployment URLs
 
-- **Frontend**: [Your Vercel/Netlify URL here]
-- **Backend API**: [Your Render/Railway/Fly.io URL here]
-- **Database**: [Your Neon/Supabase URL here]
-- **AI Service**: [Your AI service URL here, if deployed]
+- **Frontend**: https://ai-powered-patient-assistant-dashbo.vercel.app/
+- **Backend API**: https://teraleads-backend-yffi.onrender.com/
 
 ## 📋 Table of Contents
 
@@ -394,25 +392,13 @@ Can be deployed to:
 - **Fly.io** (Python service)
 - Or keep it as an optional local service
 
-## 🧪 Testing
-
-### Manual Testing Checklist
-
-- [ ] User registration and login
-- [ ] JWT token persistence (refresh page, still logged in)
-- [ ] Create, read, update, delete patients
-- [ ] Patient list pagination
-- [ ] Send chat message and receive AI response
-- [ ] Chat history persistence
-- [ ] Protected routes redirect to login when not authenticated
-
 ## 📝 License
 
 This project was created as part of a technical assessment for TeraLeads.
 
 ## 👤 Author
 
-[Your Name]
+Usama Islam
 
 ---
 

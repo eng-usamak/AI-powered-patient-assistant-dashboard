@@ -164,6 +164,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               fontSize: '1rem',
               border: '1px solid #ccc',
               borderRadius: '8px',
+              backgroundColor: '#ffffff',
+              color: '#000000',
             }}
           />
           <button

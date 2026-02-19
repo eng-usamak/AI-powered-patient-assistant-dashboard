@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 import { authApi } from '../api/auth';
-import { Box, Container, TextField, Button, Typography, Alert, Paper } from '@mui/material';
+import { Box, Container, TextField, Button, Typography, Paper } from '@mui/material';
+import { toast } from 'react-toastify';
 import backgroundImage from '../assets/background.jpg';
 
 const LoginPage: React.FC = () => {
@@ -10,29 +11,30 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState<string>('');
   const [passwordError, setPasswordError] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const validateEmail = (email: string): boolean => {
+  const validateEmail = (email: string, showError: boolean = false): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email) {
-      setEmailError('Email is required');
+      if (showError) setEmailError('Email is required');
       return false;
     }
     if (!emailRegex.test(email)) {
-      setEmailError('Please enter a valid email address');
+      if (showError) setEmailError('Please enter a valid email address');
       return false;
     }
     setEmailError('');
     return true;
   };
 
-  const validatePassword = (password: string): boolean => {
+  const validatePassword = (password: string, showError: boolean = false): boolean => {
     if (!password) {
-      setPasswordError('Password is required');
+      if (showError) setPasswordError('Password is required');
       return false;
     }
     setPasswordError('');
@@ -42,25 +44,48 @@ const LoginPage: React.FC = () => {
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEmail(value);
+    // Clear error when user starts typing
     if (emailError) {
-      validateEmail(value);
+      setEmailError('');
+    }
+    // Only validate if field was previously touched
+    if (emailTouched) {
+      validateEmail(value, true);
     }
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setPassword(value);
+    // Clear error when user starts typing
     if (passwordError) {
-      validatePassword(value);
+      setPasswordError('');
     }
+    // Only validate if field was previously touched
+    if (passwordTouched) {
+      validatePassword(value, true);
+    }
+  };
+
+  const handleEmailBlur = () => {
+    setEmailTouched(true);
+    validateEmail(email, true);
+  };
+
+  const handlePasswordBlur = () => {
+    setPasswordTouched(true);
+    validatePassword(password, true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    
+    // Mark all fields as touched
+    setEmailTouched(true);
+    setPasswordTouched(true);
 
-    const isEmailValid = validateEmail(email);
-    const isPasswordValid = validatePassword(password);
+    const isEmailValid = validateEmail(email, true);
+    const isPasswordValid = validatePassword(password, true);
 
     if (!isEmailValid || !isPasswordValid) {
       return;
@@ -72,8 +97,10 @@ const LoginPage: React.FC = () => {
       const response = await authApi.login({ email, password });
       login(response.user, response.token);
       navigate('/patients');
+      toast.success('Logged in successfully');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      const message = err instanceof Error ? err.message : 'Login failed';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -162,9 +189,9 @@ const LoginPage: React.FC = () => {
               type="email"
               value={email}
               onChange={handleEmailChange}
-              onBlur={() => validateEmail(email)}
-              error={!!emailError}
-              helperText={emailError}
+              onBlur={handleEmailBlur}
+              error={!!emailError && emailTouched}
+              helperText={emailTouched ? emailError : ''}
               disabled={loading}
               margin="normal"
               variant="outlined"
@@ -177,6 +204,18 @@ const LoginPage: React.FC = () => {
                   },
                   '&.Mui-focused': {
                     backgroundColor: 'rgba(255, 255, 255, 1)',
+                  },
+                  '& input:-webkit-autofill': {
+                    WebkitBoxShadow: '0 0 0 30px rgba(255, 255, 255, 0.9) inset !important',
+                    WebkitTextFillColor: '#000000 !important',
+                    color: '#000000 !important',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9) !important',
+                  },
+                  '& input:-webkit-autofill:focus': {
+                    WebkitBoxShadow: '0 0 0 30px rgba(255, 255, 255, 1) inset !important',
+                    WebkitTextFillColor: '#000000 !important',
+                    color: '#000000 !important',
+                    backgroundColor: 'rgba(255, 255, 255, 1) !important',
                   },
                 },
                 '& .MuiInputLabel-root.Mui-focused': {
@@ -192,9 +231,9 @@ const LoginPage: React.FC = () => {
               type="password"
               value={password}
               onChange={handlePasswordChange}
-              onBlur={() => validatePassword(password)}
-              error={!!passwordError}
-              helperText={passwordError}
+              onBlur={handlePasswordBlur}
+              error={!!passwordError && passwordTouched}
+              helperText={passwordTouched ? passwordError : ''}
               disabled={loading}
               margin="normal"
               variant="outlined"
@@ -208,18 +247,24 @@ const LoginPage: React.FC = () => {
                   '&.Mui-focused': {
                     backgroundColor: 'rgba(255, 255, 255, 1)',
                   },
+                  '& input:-webkit-autofill': {
+                    WebkitBoxShadow: '0 0 0 30px rgba(255, 255, 255, 0.9) inset !important',
+                    WebkitTextFillColor: '#000000 !important',
+                    color: '#000000 !important',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9) !important',
+                  },
+                  '& input:-webkit-autofill:focus': {
+                    WebkitBoxShadow: '0 0 0 30px rgba(255, 255, 255, 1) inset !important',
+                    WebkitTextFillColor: '#000000 !important',
+                    color: '#000000 !important',
+                    backgroundColor: 'rgba(255, 255, 255, 1) !important',
+                  },
                 },
                 '& .MuiInputLabel-root.Mui-focused': {
                   color: 'primary.main',
                 },
               }}
             />
-
-            {error && (
-              <Alert severity="error" sx={{ mt: 2, mb: 2 }}>
-                {error}
-              </Alert>
-            )}
 
             <Button
               type="submit"

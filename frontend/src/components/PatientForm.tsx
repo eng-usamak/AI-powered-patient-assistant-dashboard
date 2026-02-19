@@ -1,5 +1,6 @@
 import React from 'react';
 import { type CreatePatientInput, type UpdatePatientInput } from '../api/patient';
+import { TextField, Button, Box } from '@mui/material';
 
 interface PatientFormProps {
   initialData?: Partial<CreatePatientInput>;
@@ -38,158 +39,121 @@ const PatientForm: React.FC<PatientFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div style={{ marginBottom: '1rem' }}>
-        <label
-          htmlFor="name"
-          style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}
-        >
-          Name *
-        </label>
-        <input
-          id="name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          disabled={loading}
-          style={{
-            width: '100%',
-            padding: '0.5rem',
-            fontSize: '1rem',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-          }}
-        />
-      </div>
+    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <TextField
+        id="name"
+        label="Name"
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        required
+        disabled={loading}
+        fullWidth
+        variant="outlined"
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 2,
+          },
+        }}
+      />
 
-      <div style={{ marginBottom: '1rem' }}>
-        <label
-          htmlFor="email"
-          style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}
-        >
-          Email
-        </label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={loading}
-          style={{
-            width: '100%',
-            padding: '0.5rem',
-            fontSize: '1rem',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-          }}
-        />
-      </div>
+      <TextField
+        id="email"
+        label="Email"
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        disabled={loading}
+        fullWidth
+        variant="outlined"
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 2,
+          },
+        }}
+      />
 
-      <div style={{ marginBottom: '1rem' }}>
-        <label
-          htmlFor="phone"
-          style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}
-        >
-          Phone
-        </label>
-        <input
-          id="phone"
-          type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          disabled={loading}
-          style={{
-            width: '100%',
-            padding: '0.5rem',
-            fontSize: '1rem',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-          }}
-        />
-      </div>
+      <TextField
+        id="phone"
+        label="Phone"
+        type="tel"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        disabled={loading}
+        fullWidth
+        variant="outlined"
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 2,
+          },
+        }}
+      />
 
-      <div style={{ marginBottom: '1rem' }}>
-        <label
-          htmlFor="dob"
-          style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}
-        >
-          Date of Birth
-        </label>
-        <input
-          id="dob"
-          type="date"
-          value={dob}
-          onChange={(e) => setDob(e.target.value)}
-          disabled={loading}
-          style={{
-            width: '100%',
-            padding: '0.5rem',
-            fontSize: '1rem',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-          }}
-        />
-      </div>
+      <TextField
+        id="dob"
+        label="Date of Birth"
+        type="date"
+        value={dob}
+        onChange={(e) => setDob(e.target.value)}
+        disabled={loading}
+        fullWidth
+        variant="outlined"
+        InputLabelProps={{
+          shrink: true,
+        }}
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 2,
+          },
+        }}
+      />
 
-      <div style={{ marginBottom: '1.5rem' }}>
-        <label
-          htmlFor="medicalNotes"
-          style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}
-        >
-          Medical Notes
-        </label>
-        <textarea
-          id="medicalNotes"
-          value={medicalNotes}
-          onChange={(e) => setMedicalNotes(e.target.value)}
-          disabled={loading}
-          rows={4}
-          style={{
-            width: '100%',
-            padding: '0.5rem',
-            fontSize: '1rem',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            fontFamily: 'inherit',
-          }}
-        />
-      </div>
+      <TextField
+        id="medicalNotes"
+        label="Medical Notes"
+        value={medicalNotes}
+        onChange={(e) => setMedicalNotes(e.target.value)}
+        disabled={loading}
+        fullWidth
+        multiline
+        rows={4}
+        variant="outlined"
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 2,
+          },
+        }}
+      />
 
-      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-        <button
+      <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
+        <Button
           type="button"
           onClick={onCancel}
           disabled={loading}
-          style={{
-            padding: '0.5rem 1rem',
-            fontSize: '1rem',
-            backgroundColor: '#6c757d',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: loading ? 'not-allowed' : 'pointer',
+          variant="outlined"
+          sx={{
+            borderRadius: 2,
+            textTransform: 'none',
+            px: 3,
           }}
         >
           Cancel
-        </button>
-        <button
+        </Button>
+        <Button
           type="submit"
           disabled={loading}
-          style={{
-            padding: '0.5rem 1rem',
-            fontSize: '1rem',
-            backgroundColor: loading ? '#ccc' : '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: loading ? 'not-allowed' : 'pointer',
+          variant="contained"
+          color="primary"
+          sx={{
+            borderRadius: 2,
+            textTransform: 'none',
+            px: 3,
           }}
         >
           {loading ? 'Saving...' : submitLabel}
-        </button>
-      </div>
-    </form>
+        </Button>
+      </Box>
+    </Box>
   );
 };
 
